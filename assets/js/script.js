@@ -151,17 +151,41 @@ function triggerVisibleAnimations() {
     });
 }
 
-// ===== WISHES =====
-const DUMMY_WISHES = [];
+// ===== FIREBASE INIT =====
+const firebaseConfig = {
+  apiKey: "AIzaSyCbkl5vISH_XmVivYbKVG-odtzWKhIr6RE",
+  authDomain: "undanganzaini.firebaseapp.com",
+  projectId: "undanganzaini",
+  storageBucket: "undanganzaini.firebasestorage.app",
+  messagingSenderId: "865019775740",
+  appId: "1:865019775740:web:1b0cb98059765cb26ba579",
+  databaseURL: "https://undanganzaini-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
 
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const wishesRef = database.ref('wishes');
+
+// ===== WISHES =====
 function loadWishes() {
     const wishesList = document.getElementById('wishesList');
-    const savedWishes = JSON.parse(localStorage.getItem('khitanan_wishes') || '[]');
-    const allWishes = [...savedWishes, ...DUMMY_WISHES];
-
-    wishesList.innerHTML = '';
-    allWishes.forEach(wish => {
-        wishesList.innerHTML += createWishHTML(wish);
+    
+    // Listen for data changes in Firebase
+    wishesRef.on('value', (snapshot) => {
+        wishesList.innerHTML = '';
+        const wishesData = snapshot.val();
+        
+        if (wishesData) {
+            // Convert object to array, sort by timestamp (newest first)
+            const allWishes = Object.values(wishesData).sort((a, b) => b.timestamp - a.timestamp);
+            
+            allWishes.forEach(wish => {
+                wishesList.innerHTML += createWishHTML(wish);
+            });
+        } else {
+            wishesList.innerHTML = '<p style="text-align:center; color:var(--text-light); margin-top:20px;">Belum ada ucapan. Jadilah yang pertama!</p>';
+        }
     });
 }
 
@@ -194,29 +218,43 @@ function submitWish(event) {
         return;
     }
 
+    // Tampilkan tombol loading
+    const submitBtn = document.querySelector('.btn-submit');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = 'Mengirim...';
+    submitBtn.disabled = true;
+
+    const now = new Date();
+    const timeString = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
     const newWish = {
         name: name,
         attendance: attendance,
         message: message,
-        time: 'Baru saja'
+        time: timeString,
+        timestamp: Date.now()
     };
 
-    // Save to localStorage
-    const savedWishes = JSON.parse(localStorage.getItem('khitanan_wishes') || '[]');
-    savedWishes.unshift(newWish);
-    localStorage.setItem('khitanan_wishes', JSON.stringify(savedWishes));
+    // Save to Firebase
+    wishesRef.push(newWish).then(() => {
+        // Reset form
+        document.getElementById('wishForm').reset();
+        
+        // Restore button
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
 
-    // Reload wishes
-    loadWishes();
+        // Show success toast
+        showToast('✅ Ucapan berhasil dikirim!');
 
-    // Reset form
-    document.getElementById('wishForm').reset();
-
-    // Show success toast
-    showToast('✅ Ucapan berhasil dikirim!');
-
-    // Scroll to wishes list
-    document.getElementById('wishesList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Scroll to wishes list
+        document.getElementById('wishesList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }).catch((error) => {
+        console.error("Error saving wish: ", error);
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        showToast('❌ Gagal mengirim ucapan, coba lagi nanti.');
+    });
 }
 
 // ===== COPY TO CLIPBOARD =====
