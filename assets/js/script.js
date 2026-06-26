@@ -4,9 +4,9 @@
 
 // ===== CONFIGURATION =====
 const CONFIG = {
-    eventDate: new Date('2026-07-12T09:00:00+07:00'),
-    childName: 'Muhammad Afnan Rizky',
-    parentNames: 'Bapak Ahmad Fauzan & Ibu Siti Nurhaliza',
+    eventDate: new Date('2026-07-01T10:00:00+07:00'),
+    childName: 'Muhammad Zaini Dahlan',
+    parentNames: 'Bapak Yadi Supriyadi & Ibu Adelia',
 };
 
 // ===== GUEST NAME FROM URL =====
@@ -31,9 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load saved wishes
     loadWishes();
-
-    // Initialize gallery placeholder images
-    generateGalleryPlaceholders();
 });
 
 // ===== OPENING SCREEN =====
@@ -154,50 +151,8 @@ function triggerVisibleAnimations() {
     });
 }
 
-// ===== LIGHTBOX =====
-function openLightbox(element) {
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightboxImg');
-    const imgSrc = element.querySelector('img').src;
-
-    lightboxImg.src = imgSrc;
-    lightbox.classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeLightbox() {
-    const lightbox = document.getElementById('lightbox');
-    lightbox.classList.remove('active');
-    document.body.style.overflow = '';
-}
-
 // ===== WISHES =====
-const DUMMY_WISHES = [
-    {
-        name: 'Pak Budi Santoso',
-        attendance: 'hadir',
-        message: 'MasyaAllah, semoga Afnan menjadi anak yang sholeh dan selalu dalam lindungan Allah SWT. Selamat menjalankan sunnah Rasulullah! 🤲',
-        time: '2 jam yang lalu'
-    },
-    {
-        name: 'Ibu Ratna',
-        attendance: 'hadir',
-        message: 'Alhamdulillah, barakallah yaa Afnan. Semoga sehat selalu dan menjadi penyejuk mata kedua orang tua. Aamiin 🤲❤️',
-        time: '5 jam yang lalu'
-    },
-    {
-        name: 'Keluarga Hendra',
-        attendance: 'hadir',
-        message: 'Selamat ya Afnan! Semoga menjadi anak sholeh yang berbakti kepada orang tua dan agama. Turut berbahagia! ☺️',
-        time: '1 hari yang lalu'
-    },
-    {
-        name: 'Tante Dewi',
-        attendance: 'tidak',
-        message: 'Maaf tidak bisa hadir, tapi doa selalu menyertai. Semoga Afnan selalu diberi kesehatan dan kebahagiaan. Sayang Afnan! 💕',
-        time: '2 hari yang lalu'
-    }
-];
+const DUMMY_WISHES = [];
 
 function loadWishes() {
     const wishesList = document.getElementById('wishesList');
@@ -318,19 +273,6 @@ function escapeHTML(str) {
     div.appendChild(document.createTextNode(str));
     return div.innerHTML;
 }
-
-// ===== GALLERY PLACEHOLDERS =====
-function generateGalleryPlaceholders() {
-    // Gallery images are already set in HTML
-    // This function can be extended to load dynamic images
-}
-
-// ===== KEYBOARD SHORTCUT =====
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeLightbox();
-    }
-});
 
 // ===== SMOOTH SCROLL FOR INTERNAL LINKS =====
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
